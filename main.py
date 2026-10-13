@@ -3,11 +3,20 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import pandas as pd
 from typing import Literal
+from fastapi.middleware.cors import CORSMiddleware
 
 
 model = joblib.load('Mental_Health_Model.pkl')
+top_countries = ['Other','India', 'USA', 'Canada', 'Australia', 'UK', 'Germany', 'Mexico','Turkey', 'France']
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 # A first Pydantic model
 class StudentData(BaseModel):
@@ -15,14 +24,19 @@ class StudentData(BaseModel):
     gender                  : Literal['Male','Female']
     country                 : str
     academic_level          : Literal['Undergradute','Graduate','High School']
-    most_used_platform      : str
-    purpose_of_use          : str
-    avg_Daily_Usage_Hours   : float
-    daily_Unlocks           : int
-    study_Hours             : float
-    physical_Activity_Hours : float
-    sleep_Hours_Per_Night   : float
-    stress_level            : str
+    most_used_platform      : Literal['Facebook', 'LinkedIn', 'Instagram', 'Snapchat', 'Twitter', 'YouTube', 'TikTok', 'LINE', 'KakaoTalk', 'VKontakte', 'WhatsApp', 'WeChat']
+    purpose_of_use          : Literal['Networking', 'Education', 'Entertainment', 'News'] 
+    avg_Daily_Usage_Hours   : float = Field(..., ge=0, le=24)
+    daily_Unlocks           : int =   Field(..., ge=0)
+    study_Hours             : float = Field(..., ge=0, le=24)
+    physical_Activity_Hours : float = Field(..., ge=0, le=24)
+    sleep_Hours_Per_Night   : float = Field(..., ge=0, le=24)
+    stress_level            : Literal['Low','Medium','High','Very High']
+
+
+# Describe what we send back (Response Body)
+class PredictionResponse(BaseModel) :
+    predicted_mental_health_score:float
 
 
 @app.get('/')
@@ -30,10 +44,7 @@ def greet():
     return {'Hello World'}
 
 
-top_countries = ['Other','India', 'USA', 'Canada', 'Australia', 'UK', 'Germany', 'Mexico','Turkey', 'France']
-
-
-@app.post('/predict')
+@app.post('/predict', response_model = PredictionResponse)
 def predict(data: StudentData):
 
     country_group = data.country if data.country in top_countries else "Other"
@@ -55,4 +66,4 @@ def predict(data: StudentData):
     
     prediction = model.predict(input_row)[0]
 
-    return prediction
+    return PredictionResponse(predicted_mental_health_score =round(float(prediction),2))
