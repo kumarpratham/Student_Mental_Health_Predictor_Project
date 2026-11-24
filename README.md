@@ -30,7 +30,7 @@ The project integrates a Scikit-learn machine learning pipeline with a FastAPI b
 ## 🛠️ Tech Stack
 
 | Category | Technologies |
-|---|---|
+| :--- | :--- |
 | Programming Language | Python |
 | Data Processing | Pandas, NumPy |
 | Machine Learning | Scikit-learn |
@@ -94,7 +94,7 @@ The dataset contains information about students' social media usage, smartphone 
 The following preprocessing techniques were implemented:
 
 | Feature Type | Preprocessing Technique |
-|---|---|
+| :--- | :--- |
 | Skewed Numerical (`Study_Hours`) | Log Transformation (`log1p`) + StandardScaler |
 | Standard Numerical Features | StandardScaler |
 | Ordinal Feature (`Stress_Level`) | OrdinalEncoder |
@@ -270,6 +270,5 @@ The predictions should not be used to make medical or psychological decisions.
 - **Live Application:** [Try the Project](https://student-mental-health-predictor-6dvm.onrender.com/)
 
 ---
-| :--- | :--- |
 
 ⭐ If you find this project interesting, consider giving the repository a star!
